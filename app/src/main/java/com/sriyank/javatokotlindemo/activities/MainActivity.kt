@@ -1,19 +1,15 @@
 package com.sriyank.javatokotlindemo.activities
 
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.EditText
-import com.google.android.material.textfield.TextInputLayout
-import android.os.Bundle
-import com.sriyank.javatokotlindemo.R
-import android.content.SharedPreferences
 import android.content.Intent
+import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
-import com.sriyank.javatokotlindemo.activities.DisplayActivity
-import com.sriyank.javatokotlindemo.activities.MainActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputLayout
+import com.sriyank.javatokotlindemo.R
 import com.sriyank.javatokotlindemo.app.Constants
-import kotlinx.android.synthetic.main.activity_main.*;
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
