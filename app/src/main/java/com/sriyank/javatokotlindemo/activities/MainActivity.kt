@@ -1,5 +1,6 @@
 package com.sriyank.javatokotlindemo.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -23,7 +24,14 @@ class MainActivity : AppCompatActivity() {
 
     /**Save app username in SharedPreferences*/
     fun saveName(view: View) {
-        Toast.makeText(applicationContext,"Feature is currently unavailable",Toast.LENGTH_LONG).show()
+        if (isNotEmpty(etName, inputLayoutName)) {
+            val personName = etName.text.toString()
+            val sharedPreferences = getSharedPreferences(Constants.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(Constants.KEY_PERSON_NAME, personName)
+            editor.apply()
+            Toast.makeText(applicationContext, "Your name has been saved successfully", Toast.LENGTH_LONG).show()
+        }
     }
 
     /**Search repositories on github after passing data to DisplayActivity*/
