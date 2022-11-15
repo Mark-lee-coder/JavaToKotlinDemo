@@ -24,9 +24,11 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    private var displayAdapter: DisplayAdapter? = null
-    private var browsedRepositories: List<Repository?>? = null
-    private var githubAPIService: GithubAPIService? = null
+    private lateinit var displayAdapter: DisplayAdapter
+    private var browsedRepositories: List<Repository> = mutableListOf()
+    private val githubAPIService: GithubAPIService by lazy {
+        RetrofitClient.getGithubAPIService()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,8 +42,6 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = layoutManager
-
-        githubAPIService = RetrofitClient.getGithubAPIService()
 
         navigationView.setNavigationItemSelectedListener(this)
 
@@ -70,12 +70,14 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     private fun fetchUserRepositories(githubUser: String?) {
-        githubAPIService!!.searchRepositoriesByUser(githubUser).enqueue(object : Callback<List<Repository>> {
+        githubAPIService.searchRepositoriesByUser(githubUser).enqueue(object : Callback<List<Repository>> {
             override fun onResponse(call: Call<List<Repository>>, response: Response<List<Repository>>) {
                 if (response.isSuccessful) {
                     Log.i(TAG, "Posts loaded from API $response")
-                    browsedRepositories = response.body()
-                    if (browsedRepositories!!.isNotEmpty()) {
+                    response.body()?.let {
+                        browsedRepositories = it
+                    }
+                    if (browsedRepositories.isNotEmpty()) {
                         setupRecyclerView(browsedRepositories)
                     }
                     else {
@@ -96,14 +98,17 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     private fun fetchRepositories(queryRepo: String?, repoLanguage: String?) {
         var queryRepo = queryRepo
         val query: MutableMap<String, String?> = HashMap()
-        if (repoLanguage != null && !repoLanguage.isEmpty()) queryRepo += " language:$repoLanguage"
+        if (repoLanguage != null && repoLanguage.isNotEmpty()) queryRepo += " language:$repoLanguage"
         query["q"] = queryRepo
-        githubAPIService!!.searchRepositories(query).enqueue(object : Callback<SearchResponse> {
+        githubAPIService.searchRepositories(query).enqueue(object : Callback<SearchResponse> {
             override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
                 if (response.isSuccessful) {
                     Log.i(TAG, "posts loaded from API $response")
-                    browsedRepositories = response.body()!!.items
-                    if (browsedRepositories != null) setupRecyclerView(browsedRepositories)
+                    response.body()?.items?.let {
+                        browsedRepositories = it
+                    }
+                    if (browsedRepositories.isNotEmpty())
+                        setupRecyclerView(browsedRepositories)
                     else Util.showMessage(this@DisplayActivity, "No Items Found")
                 }
                 else {
@@ -118,9 +123,9 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         })
     }
 
-    private fun setupRecyclerView(items: List<Repository?>?) {
+    private fun setupRecyclerView(items: List<Repository>) {
         displayAdapter = DisplayAdapter(this, items)
-        recyclerView!!.adapter = displayAdapter
+        recyclerView.adapter = displayAdapter
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
@@ -140,7 +145,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     private fun showBrowsedResults() {
-        displayAdapter!!.swap(browsedRepositories)
+        displayAdapter.swap(browsedRepositories)
     }
 
     private fun showBookmarks() {
@@ -148,11 +153,11 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     private fun closeDrawer() {
-        drawerLayout!!.closeDrawer(GravityCompat.START)
+        drawerLayout.closeDrawer(GravityCompat.START)
     }
 
     override fun onBackPressed() {
-        if (drawerLayout!!.isDrawerOpen(GravityCompat.START)) closeDrawer()
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) closeDrawer()
         else {
             super.onBackPressed()
         }
