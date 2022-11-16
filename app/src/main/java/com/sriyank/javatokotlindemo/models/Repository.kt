@@ -1,9 +1,11 @@
 package com.sriyank.javatokotlindemo.models
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
 data class Repository(
-    var id: Int,
+    @PrimaryKey var id: Int,
     var name: String?,
     var language: String?,
     @SerializedName("html_url") var htmlUrl: String?,
@@ -11,4 +13,4 @@ data class Repository(
     @SerializedName("stargazers_count")  var stars: Int?,
     @SerializedName("watchers_count")  var watchers: Int?,
     var forks: Int?,
-    var owner: Owner?)
+    var owner: Owner?) : RealmObject()
