@@ -12,7 +12,8 @@ import com.google.android.material.navigation.NavigationView
 import com.sriyank.javatokotlindemo.R
 import com.sriyank.javatokotlindemo.adapters.DisplayAdapter
 import com.sriyank.javatokotlindemo.app.Constants
-import com.sriyank.javatokotlindemo.app.Util
+import com.sriyank.javatokotlindemo.extensions.showErrorMessage
+import com.sriyank.javatokotlindemo.extensions.toast
 import com.sriyank.javatokotlindemo.models.Repository
 import com.sriyank.javatokotlindemo.models.SearchResponse
 import com.sriyank.javatokotlindemo.retrofit.GithubAPIService
@@ -81,16 +82,16 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                         setupRecyclerView(browsedRepositories)
                     }
                     else {
-                        Util.showMessage(this@DisplayActivity, "No items found!")
+                        toast("No items found!")
                     }
                 }
                 else {
                     Log.i(TAG, "Error! $response")
-                    Util.showErrorMessage(this@DisplayActivity, response.errorBody()!!)
+                    showErrorMessage(response.errorBody()!!)
                 }
             }
             override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
-                Util.showMessage(this@DisplayActivity, t.message)
+                toast(t.message ?: "Error fetching results!")
             }
         })
     }
@@ -107,18 +108,21 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                     response.body()?.items?.let {
                         browsedRepositories = it
                     }
-                    if (browsedRepositories.isNotEmpty())
+                    if (browsedRepositories.isNotEmpty()) {
                         setupRecyclerView(browsedRepositories)
-                    else Util.showMessage(this@DisplayActivity, "No Items Found")
+                    }
+                    else {
+                        toast("No items found!")
+                    }
                 }
                 else {
                     Log.i(TAG, "error $response")
-                    Util.showErrorMessage(this@DisplayActivity, response.errorBody())
+                    showErrorMessage(response.errorBody()!!)
                 }
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                Util.showMessage(this@DisplayActivity, t.toString())
+                toast(t.toString())
             }
         })
     }
