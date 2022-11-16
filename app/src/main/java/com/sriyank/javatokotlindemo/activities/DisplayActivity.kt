@@ -36,7 +36,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         setContentView(R.layout.activity_display)
 
         setSupportActionBar(toolbar)
-        supportActionBar!!.setTitle("Showing Browsed Results")
+        supportActionBar!!.title = "Showing Browsed Results"
 
         setAppUsername()
 
@@ -134,18 +134,21 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         menuItem.isChecked = true
-        closeDrawer()
         when (menuItem.itemId) {
             R.id.item_bookmark -> {
-                showBookmarks()
-                supportActionBar!!.title = "Showing Bookmarks"
+                consumeMenuEvent({showBookmarks()}, "Showing Bookmarks")//sets the title to the toolbar
             }
             R.id.item_browsed_results -> {
-                showBrowsedResults()
-                supportActionBar!!.title = "Showing Browsed Results"
+                consumeMenuEvent({showBrowsedResults()}, "Showing Browsed Results")//sets the title to the toolbar
             }
         }
         return true
+    }
+
+    private inline fun consumeMenuEvent(myFunc: () -> Unit, title: String) {
+        myFunc()
+        closeDrawer()
+        supportActionBar!!.title = title
     }
 
     private fun showBrowsedResults() {
