@@ -27,7 +27,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     private lateinit var displayAdapter: DisplayAdapter
     private var browsedRepositories: List<Repository> = mutableListOf()
     private val githubAPIService: GithubAPIService by lazy {
-        RetrofitClient.getGithubAPIService()
+        RetrofitClient.githubAPIService
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +57,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         }
         else {
             val githubUser = intent.getStringExtra(Constants.KEY_GITHUB_USER)
-            fetchUserRepositories(githubUser)
+            fetchUserRepositories(githubUser!!)
         }
     }
 
@@ -69,7 +69,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         headerView.txvName.text = personName
     }
 
-    private fun fetchUserRepositories(githubUser: String?) {
+    private fun fetchUserRepositories(githubUser: String) {
         githubAPIService.searchRepositoriesByUser(githubUser).enqueue(object : Callback<List<Repository>> {
             override fun onResponse(call: Call<List<Repository>>, response: Response<List<Repository>>) {
                 if (response.isSuccessful) {
