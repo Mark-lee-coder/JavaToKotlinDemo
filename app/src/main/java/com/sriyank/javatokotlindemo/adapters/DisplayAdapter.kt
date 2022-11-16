@@ -1,117 +1,77 @@
-package com.sriyank.javatokotlindemo.adapters;
+package com.sriyank.javatokotlindemo.adapters
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.sriyank.javatokotlindemo.R
+import com.sriyank.javatokotlindemo.adapters.DisplayAdapter.MyViewHolder
+import com.sriyank.javatokotlindemo.app.Util
+import com.sriyank.javatokotlindemo.models.Repository
+import kotlinx.android.synthetic.main.list_item.view.*
 
-import com.sriyank.javatokotlindemo.R;
-import com.sriyank.javatokotlindemo.app.Util;
-import com.sriyank.javatokotlindemo.models.Repository;
+class DisplayAdapter(private val context: Context, items: List<Repository>) : RecyclerView.Adapter<MyViewHolder>() {
+    private var repositoryList: List<Repository> = items
 
-import java.util.List;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val view = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
+        return MyViewHolder(view)
+    }
 
-import io.realm.Realm;
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val current = repositoryList[position]
+        holder.setData(current, position)
+    }
 
+    override fun getItemCount(): Int = repositoryList.size
 
-public class DisplayAdapter extends RecyclerView.Adapter<DisplayAdapter.MyViewHolder> {
+    fun swap(dataList: List<Repository>) {
+        if (dataList.isEmpty()) Util.showMessage(context, "No Items Found") //the Util.showMessage will be executed if data isEmpty
+        repositoryList = dataList
+        notifyDataSetChanged()
+    }
 
-	private static final String TAG = DisplayAdapter.class.getSimpleName();
+    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private var pos = 0
+        private var current: Repository? = null
 
-	private List<Repository> mData;
-	private LayoutInflater inflater;
-	private Context mContext;
+        init {
+            itemView.imgBookmark.setOnClickListener { bookmarkRepository(current) }
 
-	public DisplayAdapter(Context context, List<Repository> items) {
-		inflater = LayoutInflater.from(context);
-		this.mData = items;
-		this.mContext = context;
-	}
+            itemView.setOnClickListener {
+                current?.let {
+                    val url = current!!.htmlUrl
+                    val webpage = Uri.parse(url)
+                    val intent = Intent(Intent.ACTION_VIEW, webpage)
 
-	@Override
-	public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View view = inflater.inflate(R.layout.list_item, parent, false);
-		MyViewHolder holder = new MyViewHolder(view);
-		return holder;
-	}
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    }
+                }
+            }
+        }
 
-	@Override
-	public void onBindViewHolder(MyViewHolder holder, int position) {
-		Repository current = mData.get(position);
-		holder.setData(current, position);
-	}
+        fun setData(current: Repository?, position: Int) {
+            current?.let {
+                itemView.txvName.text = current.name
+                itemView.txvLanguage.text = current.language
+                itemView.txvForks.text = current.forks.toString()
+                itemView.txvWatchers.text = current.watchers.toString()
+                itemView.txvForks.text = current.stars.toString()
+            }
+            this.pos = position
+            this.current = current
+        }
 
-	@Override
-	public int getItemCount() {
-		return mData.size();
-	}
+        private fun bookmarkRepository(current: Repository?) {
 
-	public void swap(List<Repository> data)
-	{
-		if (data.size() == 0)
-			Util.showMessage(mContext, "No Items Found");
-		mData = data;
-		notifyDataSetChanged();
-	}
+        }
+    }
 
-	class MyViewHolder extends RecyclerView.ViewHolder {
-
-		private TextView name, language, stars, watchers, forks;
-		private int position;
-		private ImageView imgBookmark;
-		private Repository current;
-
-		public MyViewHolder(View itemView) {
-			super(itemView);
-
-			name = itemView.findViewById(R.id.txvName);
-			language = itemView.findViewById(R.id.txvLanguage);
-			stars = itemView.findViewById(R.id.txvStars);
-			watchers = itemView.findViewById(R.id.txvWatchers);
-			forks = itemView.findViewById(R.id.txvForks);
-
-			imgBookmark = itemView.findViewById(R.id.img_bookmark);
-			imgBookmark.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					bookmarkRepository(current);
-				}
-			});
-
-			itemView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String url = current.getHtmlUrl();
-					Uri webpage = Uri.parse(url);
-					Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
-					if (intent.resolveActivity(mContext.getPackageManager()) != null) {
-						mContext.startActivity(intent);
-					}
-				}
-			});
-		}
-
-		public void setData(Repository current, int position) {
-
-			this.name.setText(current.getName());
-			this.language.setText(String.valueOf(current.getLanguage()));
-			this.forks.setText(String.valueOf(current.getForks()));
-			this.watchers.setText(String.valueOf(current.getWatchers()));
-			this.stars.setText(String.valueOf(current.getStars()));
-			this.position = position;
-			this.current = current;
-		}
-
-		private void bookmarkRepository(final Repository current) {
-
-
-		}
-	}
+    companion object {
+        private val TAG = DisplayAdapter::class.java.simpleName
+    }
 }
