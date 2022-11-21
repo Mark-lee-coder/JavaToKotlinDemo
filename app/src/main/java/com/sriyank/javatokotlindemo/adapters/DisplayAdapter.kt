@@ -14,6 +14,7 @@ import com.sriyank.javatokotlindemo.models.Repository
 import io.realm.Realm
 import kotlinx.android.synthetic.main.list_item.view.*
 
+@Suppress("NAME_SHADOWING")
 class DisplayAdapter(private val context: Context, items: List<Repository>) : RecyclerView.Adapter<MyViewHolder>() {
     private var repositoryList: List<Repository> = items
 

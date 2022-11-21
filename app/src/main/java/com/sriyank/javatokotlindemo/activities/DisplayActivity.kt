@@ -25,6 +25,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+@Suppress("NAME_SHADOWING")
 class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var displayAdapter: DisplayAdapter
     private var browsedRepositories: List<Repository> = mutableListOf()
@@ -168,6 +169,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         drawerLayout.closeDrawer(GravityCompat.START)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) closeDrawer()
         else {

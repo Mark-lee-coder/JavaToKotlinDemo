@@ -8,7 +8,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         Realm.init(this) // should only be done once when app starts
-        val config = RealmConfiguration.Builder().name("myrealm.realm").build()
+        val config = RealmConfiguration.Builder().name("my-realm.realm").build()
         Realm.setDefaultConfiguration(config)
     }
 }
